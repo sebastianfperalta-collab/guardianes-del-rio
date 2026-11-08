@@ -1,7 +1,6 @@
 // Objetos del juego: barca, basura, tubería, ave atrapada, fauna, bandada, luciérnagas, muelle
 import * as THREE from 'three';
 import { marco, puntoOrilla, anchoRio, limpiezaEn, rnd } from './mundo.js';
-import { BASURA } from './datos.js';
 
 const lam = (c, o = {}) => new THREE.MeshLambertMaterial({ color: c, flatShading: true, ...o });
 const mesh = (g, m) => { const x = new THREE.Mesh(g, m); return x; };
@@ -34,30 +33,62 @@ export function crearBarca() {
 }
 
 // ---------- Basura ----------
+const L = (c, o = {}) => lam(c, o);
 const geos = {
-  botella: () => { const gp = new THREE.Group(); gp.add(mesh(new THREE.CylinderGeometry(.16, .16, .55, 8), lam(0x6fc7f0, { transparent: true, opacity: .85 }))); const t = mesh(new THREE.CylinderGeometry(.05, .08, .14, 6), lam(0xf2f2f2)); t.position.y = .34; gp.add(t); gp.rotation.z = Math.PI / 2.4; return gp; },
-  bolsa: () => { const m = mesh(new THREE.IcosahedronGeometry(.34, 0), lam(0xeeeeee)); m.scale.set(1.3, .6, 1); return m; },
-  lata: () => { const m = mesh(new THREE.CylinderGeometry(.14, .14, .3, 8), lam(0xb8bfcc)); m.rotation.z = 1.2; return m; },
-  comida: () => { const gp = new THREE.Group(); gp.add(mesh(new THREE.IcosahedronGeometry(.26, 0), lam(0x9a7a3a))); const b = mesh(new THREE.IcosahedronGeometry(.16, 0), lam(0x7a8a3a)); b.position.set(.2, .1, 0); gp.add(b); return gp; },
-  ramas: () => { const gp = new THREE.Group(); for (let i = 0; i < 3; i++) { const r = mesh(new THREE.CylinderGeometry(.04, .05, .9, 5), lam(0x5b4a28)); r.rotation.z = 1.2 + i * .5; r.rotation.y = i * 1.1; gp.add(r); } return gp; },
-  llanta: () => { const m = mesh(new THREE.TorusGeometry(.42, .17, 6, 12), lam(0x2a2a2a)); m.rotation.x = Math.PI / 2.1; return m; }
+  botella: () => { const gp = new THREE.Group(); gp.add(mesh(new THREE.CylinderGeometry(.16, .16, .55, 8), L(0x6fc7f0, { transparent: true, opacity: .85 }))); const t = mesh(new THREE.CylinderGeometry(.05, .08, .14, 6), L(0xf2f2f2)); t.position.y = .34; gp.add(t); gp.rotation.z = Math.PI / 2.4; return gp; },
+  frascoVidrio: () => { const gp = new THREE.Group(); gp.add(mesh(new THREE.CylinderGeometry(.2, .22, .5, 8), L(0x3f9e5a, { transparent: true, opacity: .8 }))); const t = mesh(new THREE.CylinderGeometry(.1, .1, .1, 6), L(0xc9c9c9)); t.position.y = .3; gp.add(t); gp.rotation.z = Math.PI / 2.2; return gp; },
+  bolsa: () => { const m = mesh(new THREE.IcosahedronGeometry(.34, 0), L(0xeeeeee)); m.scale.set(1.3, .6, 1); return m; },
+  vaso: () => { const m = mesh(new THREE.CylinderGeometry(.17, .12, .34, 8, 1, true), L(0xffffff, { side: THREE.DoubleSide })); m.rotation.z = .4; return m; },
+  tapa: () => { const m = mesh(new THREE.CylinderGeometry(.14, .14, .05, 10), L(0xe04b3a)); m.rotation.x = Math.PI / 2; return m; },
+  lata: () => { const m = mesh(new THREE.CylinderGeometry(.14, .14, .3, 8), L(0xb8bfcc)); m.rotation.z = 1.2; return m; },
+  cajaCarton: () => { const m = mesh(new THREE.BoxGeometry(.5, .3, .4), L(0xc9955a)); m.rotation.y = .5; return m; },
+  periodico: () => { const m = mesh(new THREE.BoxGeometry(.55, .03, .4), L(0xe9e4d2)); m.rotation.set(.2, .6, .1); return m; },
+  comida: () => { const gp = new THREE.Group(); gp.add(mesh(new THREE.IcosahedronGeometry(.26, 0), L(0x9a7a3a))); const b = mesh(new THREE.IcosahedronGeometry(.16, 0), L(0x7a8a3a)); b.position.set(.2, .1, 0); gp.add(b); return gp; },
+  cascara: () => { const m = mesh(new THREE.SphereGeometry(.22, 8, 6), L(0xf0a030)); m.scale.set(1, .6, 1.2); return m; },
+  ramas: () => { const gp = new THREE.Group(); for (let i = 0; i < 3; i++) { const r = mesh(new THREE.CylinderGeometry(.04, .05, .9, 5), L(0x5b4a28)); r.rotation.z = 1.2 + i * .5; r.rotation.y = i * 1.1; gp.add(r); } return gp; },
+  llanta: () => { const m = mesh(new THREE.TorusGeometry(.42, .17, 6, 12), L(0x2a2a2a)); m.rotation.x = Math.PI / 2.1; return m; },
+  pila: () => { const m = mesh(new THREE.CylinderGeometry(.09, .09, .26, 8), L(0x2e7d32)); m.rotation.z = Math.PI / 2.5; return m; },
+  bombillo: () => { const gp = new THREE.Group(); gp.add(mesh(new THREE.SphereGeometry(.16, 8, 6), L(0xfff3b0, { transparent: true, opacity: .9 }))); const b = mesh(new THREE.CylinderGeometry(.07, .07, .1, 6), L(0x888888)); b.position.y = -.2; gp.add(b); return gp; },
+  celular: () => { const m = mesh(new THREE.BoxGeometry(.2, .36, .04), L(0x222831)); m.rotation.set(.3, .4, .2); return m; }
 };
-const ORDEN = ['botella', 'bolsa', 'lata', 'comida', 'ramas', 'llanta'];
-export const ICONO = { plastico: '🧴', metal: '🥫', organico: '🍂', llanta: '🛞' };
-export const CAJA = { plastico: 'aprov', metal: 'aprov', organico: 'org', llanta: 'esp' };
+// catálogo: peso = qué tan frecuente es; cada tipo cae en una canasta
+export const CATALOGO = [
+  { tipo: 'plastico', nombre: 'Botella plástica', icono: '🧴', geo: 'botella', peso: 5 },
+  { tipo: 'plastico', nombre: 'Bolsa de plástico', icono: '🛍️', geo: 'bolsa', peso: 4 },
+  { tipo: 'plastico', nombre: 'Vaso desechable', icono: '🥤', geo: 'vaso', peso: 3 },
+  { tipo: 'plastico', nombre: 'Tapa de gaseosa', icono: '🔴', geo: 'tapa', peso: 2 },
+  { tipo: 'metal', nombre: 'Lata de bebida', icono: '🥫', geo: 'lata', peso: 4 },
+  { tipo: 'vidrio', nombre: 'Frasco de vidrio', icono: '🫙', geo: 'frascoVidrio', peso: 3 },
+  { tipo: 'carton', nombre: 'Caja de cartón', icono: '📦', geo: 'cajaCarton', peso: 3 },
+  { tipo: 'carton', nombre: 'Periódico mojado', icono: '📰', geo: 'periodico', peso: 2 },
+  { tipo: 'organico', nombre: 'Restos de comida', icono: '🍗', geo: 'comida', peso: 3 },
+  { tipo: 'organico', nombre: 'Cáscara de fruta', icono: '🍌', geo: 'cascara', peso: 3 },
+  { tipo: 'organico', nombre: 'Ramas y hojas secas', icono: '🍂', geo: 'ramas', peso: 2 },
+  { tipo: 'llanta', nombre: 'Llanta vieja', icono: '🛞', geo: 'llanta', peso: 1 },
+  { tipo: 'pila', nombre: 'Pila usada', icono: '🔋', geo: 'pila', peso: 2 },
+  { tipo: 'bombillo', nombre: 'Bombillo fundido', icono: '💡', geo: 'bombillo', peso: 1 },
+  { tipo: 'electronico', nombre: 'Celular viejo', icono: '📱', geo: 'celular', peso: 1 }
+];
+export const ICONO = Object.fromEntries(CATALOGO.map((c) => [c.tipo, c.icono]));
+export const CAJA = { plastico: 'aprov', metal: 'aprov', vidrio: 'aprov', carton: 'aprov', organico: 'org', llanta: 'esp', pila: 'esp', bombillo: 'esp', electronico: 'esp' };
+
+// selecciona un objeto del catálogo con pesos, evitando repetir el anterior
+function elegir(r, prev) {
+  const total = CATALOGO.reduce((a, c) => a + c.peso, 0);
+  let x = r * total;
+  for (const c of CATALOGO) { x -= c.peso; if (x <= 0) return c.nombre === prev ? CATALOGO[(CATALOGO.indexOf(c) + 3) % CATALOGO.length] : c; }
+  return CATALOGO[0];
+}
 
 export function crearBasura(escena, tramo, n, desde, hasta, semilla) {
-  const lista = [];
+  const lista = []; let prev = null;
   for (let i = 0; i < n; i++) {
-    const r = rnd(semilla + i * 3.7);
-    const idxTipo = r < .3 ? (i % 2 ? 0 : 1) : r < .5 ? 2 : r < .72 ? (i % 2 ? 3 : 4) : r < .88 ? (i % 3 ? 0 : 2) : 5;
-    const tipo = ORDEN[idxTipo];
-    const info = BASURA[Math.min(idxTipo, 5)];
+    const c = elegir(rnd(semilla + i * 7.3), prev); prev = c.nombre;
     const s = desde + (hasta - desde) * ((i + 0.5 + (rnd(semilla + i * 9.1) - .5) * .5) / n);
     const m = marco(s), hw = anchoRio(s) / 2;
     const lat = (rnd(semilla + i * 5.5) - .5) * (hw * 1.5);
-    const g = geos[tipo](); g.position.set(m.x + m.nx * lat, 0.05, m.z + m.nz * lat);
-    g.userData = { tipo: BASURA[idxTipo].tipo, nombre: BASURA[idxTipo].nombre, s, tramo, recogida: false, f: rnd(i + semilla) * 6, y0: 0.05 };
+    const g = geos[c.geo](); g.position.set(m.x + m.nx * lat, 0.05, m.z + m.nz * lat);
+    g.userData = { tipo: c.tipo, nombre: c.nombre, icono: c.icono, s, tramo, recogida: false, f: rnd(i + semilla) * 6, y0: 0.05 };
     escena.add(g); lista.push(g);
   }
   return lista;

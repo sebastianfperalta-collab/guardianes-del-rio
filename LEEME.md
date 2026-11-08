@@ -8,10 +8,10 @@ Viaje en barca por el río Bogotá, del páramo de Guacheneque al Salto del Tequ
 - Atajos: `?rapido=1` (mitad de basura, para presentaciones cortas), `?tramo=2` (salta a un tramo).
 
 ## Qué se hace
-1. Tocar la basura que flota para recogerla.
-2. Mantener presionadas las tuberías que vierten para sellarlas (tramos 2 y 4).
+1. Tocar la basura que flota para recogerla. Hay 15 tipos de residuos (plástico, vidrio, cartón, metal, orgánicos, llantas, pilas, bombillos, electrónicos…) con pesos distintos; no se repite el mismo dos veces seguidas.
+2. Mantener presionadas las tuberías que vierten para sellarlas (tramos 2 y 4). Mientras mantienes, la barca frena casi por completo; el CTA "Mantén presionado para tapar" indica qué elemento es interactivo.
 3. Mantener presionada el ave atrapada en una bolsa para liberarla (tramo 3).
-4. Fotografiar fauna y flora tocándola: se llena la libreta (5 especies).
+4. Tocar fauna y flora para fotografiarla: el juego se pausa, aparece la foto con su ficha y se llena la libreta (5 especies). El CTA "Toca para fotografiar" aparece sobre los animales visibles.
 5. Al final de cada tramo: clasificar residuos en 3 canecas y leer un dato real.
 6. Diploma "Guardián del Río" con su nombre, descargable en PNG.
 
@@ -28,6 +28,9 @@ Los textos y datos están en `js/datos.js`.
 - Los ríos Fucha, Tunjuelo y Salitre desembocan en el Bogotá (Alcaldía de Bogotá).
 
 ## Pendiente por confirmar antes de presentarlo
+- Fotos reales en `img/`: falta confirmar autor y licencia de cada una para acreditarla en pantalla.
+- La garza de `img/garza.webp` es una garza gris (*Ardea cinerea*), no *Ardea alba* como dice el juego; ajusta nombre o foto.
+- La foto del pato (`img/pato.webp`) es *Oxyura jamaicensis* (pato ruddy), no el pato andino del juego; ajusta nombre o foto.
 - La longitud total del río aparece con cifras distintas según la fuente (308 a 380 km), por eso no se muestra ninguna.
 - El "pato andino" del álbum se asocia a *Oxyura jamaicensis*, que figura como amenazada a nivel nacional en la ficha de los humedales de la Sabana; confirma el nombre común con un biólogo si lo vas a citar.
 - La historia del abuelo es ficticia (narrativa).

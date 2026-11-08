@@ -185,24 +185,55 @@ function tocar(x, y) {
 }
 function recoger(b) {
   const u = b.userData; u.recogida = true; u.anim = 0; est.total++;
-  est.hechos = est.hechos || {}; (est.recogidasTramo = est.recogidasTramo || [[], [], [], [], []])[u.tramo].push({ tipo: u.tipo, nombre: u.nombre });
+  est.hechos = est.hechos || {}; (est.recogidasTramo = est.recogidasTramo || [[], [], [], [], []])[u.tramo].push({ tipo: u.tipo, nombre: u.nombre, icono: u.icono });
   audio.recoger(); const p = b.getWorldPosition(new THREE.Vector3()); onda(p.x, p.z);
   M.limpiar(u.s, Math.min(0.42, 0.03 * (TR / Math.max(1, cantidades[u.tramo]))) * 1.0, 12);
   const pr = hechoTramo(u.tramo), meta = metaTramo(u.tramo);
   if (pr === meta) toast('¡Suficiente para seguir! Puedes recoger más 🌿');
   hud();
 }
+function capturar(x, y) {
+  renderer.render(escena, camara);
+  const W = lienzo.width, H = lienzo.height, k = W / innerWidth;
+  const lado = Math.min(W, H) * 0.62, cx = x * k, cy = y * (H / innerHeight);
+  const c = document.createElement('canvas'); c.width = 640; c.height = 640;
+  const sx = Math.min(Math.max(0, cx - lado / 2), W - lado), sy = Math.min(Math.max(0, cy - lado / 2), H - lado);
+  c.getContext('2d').drawImage(lienzo, sx, sy, lado, lado, 0, 0, 640, 640);
+  return c.toDataURL('image/jpeg', 0.9);
+}
 function foto(f) {
-  const id = f.userData.id; const nuevo = !est.especies.has(id);
-  audio.obturador(); const fl = $('flash'); fl.style.transition = 'none'; fl.style.opacity = '0.8'; requestAnimationFrame(() => { fl.style.transition = 'opacity .5s'; fl.style.opacity = '0'; });
-  const e = ESPECIES.find((x) => x.id === id);
-  if (nuevo) { est.especies.add(id); toast(`📷 <b>${e.nombre}</b><br><small style="text-transform:none;letter-spacing:0;font-size:12px">${e.dato}</small>`, 4800); audio.exito(); } else toast(`📷 ${e.nombre}`, 1200);
+  const id = f.userData.id; const nuevo = !est.especies.has(id); const e = ESPECIES.find((x) => x.id === id);
+  const p = pantalla(f, f.userData.tipo === 'pez' ? 0.1 : 0.7) || { x: innerWidth / 2, y: innerHeight / 2 };
+  audio.obturador(); const fl = $('flash'); fl.style.transition = 'none'; fl.style.opacity = '0.9'; requestAnimationFrame(() => { fl.style.transition = 'opacity .6s'; fl.style.opacity = '0'; });
+  const img = e.foto || capturar(p.x, p.y);
+  if (nuevo) est.especies.add(id);
+  est.pausaFoto = true; cancelarHold();
+  $('pol-img').src = img; $('pol-tag').textContent = nuevo ? '¡Nueva especie en tu libreta!' : 'Ya estaba en tu libreta';
+  $('pol-nom').textContent = e.nombre; $('pol-cien').textContent = e.cien; $('pol-dato').textContent = e.dato;
+  setTimeout(() => $('polaroid').classList.remove('oculto'), 120);
+  if (nuevo) setTimeout(() => audio.exito(), 150);
   hud();
+}
+$('pol-btn').onclick = () => { audio.boton(); $('polaroid').classList.add('oculto'); est.pausaFoto = false; };
+
+// ---------- llamados a la acción ----------
+const cta = $('cta'); const _tv = new THREE.Vector3(); let ctaT = 0;
+function updateCTA(dt) {
+  ctaT -= dt; if (ctaT > 0) return; ctaT = 0.08;
+  let best = null, bd = 1e9, txt = '', dy = 0.3;
+  if (est.fase === 'viaje' && !ptr.hold) {
+    for (const tb of tuberias) { const u = tb.userData; if (u.sellada || !tb.visible) continue; const d = tb.getWorldPosition(_tv).distanceTo(rig.position); if (d < 34 && d < bd) { bd = d; best = tb; txt = '🔧 Mantén presionado para tapar'; dy = 1.4; } }
+    if (!aveAtrapada.userData.libre) { const d = aveAtrapada.getWorldPosition(_tv).distanceTo(rig.position); if (d < 34 && d < bd) { bd = d; best = aveAtrapada; txt = '🐦 Mantén presionado para liberar'; dy = 1.8; } }
+    for (const f of fauna) { const u = f.userData; if (!(f.visible && u.visible > 0.55)) continue; const d = f.getWorldPosition(_tv).distanceTo(rig.position); if (d < 50 && d < bd) { bd = d; best = f; txt = '📷 Toca para fotografiar'; dy = u.tipo === 'pez' ? 0.3 : 0.9; } }
+  }
+  const q = best && pantalla(best, dy);
+  if (!q) { cta.classList.add('oculto'); return; }
+  cta.textContent = txt; cta.style.left = q.x + 'px'; cta.style.top = q.y + 'px'; cta.classList.remove('oculto');
 }
 
 // ---------- tramos: clasificación y tarjetas ----------
-const reglas = { plastico: 'aprov', metal: 'aprov', organico: 'org', llanta: 'esp' };
-const nombreCaja = { aprov: 'Aprovechable (plástico y metal)', org: 'Orgánico', esp: 'Residuo especial' };
+const reglas = O.CAJA;
+const nombreCaja = { aprov: 'Aprovechable (plástico, vidrio, cartón, metal)', org: 'Orgánico', esp: 'Residuo especial (llantas, pilas, bombillos, electrónicos)' };
 let cola = [], colaI = 0, alTerminarClas = null;
 function clasificar(t, fin) {
   const todas = (est.recogidasTramo && est.recogidasTramo[t]) || [];
@@ -215,7 +246,7 @@ function clasificar(t, fin) {
   est.fase = 'dialogo'; $('clasif').classList.remove('oculto'); mostrarItem();
 }
 function mostrarItem() {
-  const it = cola[colaI]; $('cl-item').textContent = O.ICONO[it.tipo]; $('cl-item').style.animation = 'none'; void $('cl-item').offsetWidth; $('cl-item').style.animation = '';
+  const it = cola[colaI]; $('cl-item').textContent = it.icono || O.ICONO[it.tipo]; $('cl-item').style.animation = 'none'; void $('cl-item').offsetWidth; $('cl-item').style.animation = '';
   $('cl-nombre').textContent = it.nombre; $('cl-msg').textContent = ''; $('cl-paso').textContent = `${colaI + 1} / ${cola.length}`;
   document.querySelectorAll('.caneca').forEach((b) => (b.disabled = false));
 }
@@ -317,10 +348,11 @@ function bucle() {
   M.uniformes.uTiempo.value = t;
 
   // movimiento de la barca
-  if (est.fase === 'viaje' && !est.pausaAlbum) {
+  if (est.fase === 'viaje' && !est.pausaAlbum && !est.pausaFoto) {
     const fin = finTramo(est.tramo), pend = pendientes(est.tramo);
     const cumple = hechoTramo(est.tramo) >= metaTramo(est.tramo);
-    let objetivo = est.retro ? -4 : 5.2;
+    est.freno = lerp(est.freno ?? 1, ptr.hold ? 0.1 : 1, Math.min(1, dt * 3));
+    let objetivo = (est.retro ? -4 : 5.2) * est.freno;
     if (est.dist > fin - 8 && !est.retro) objetivo = Math.max(0, 5.2 * (fin - est.dist) / 8);
     if (est.dist >= fin - 0.4 && !cumple) {
       if (!est.retro) {
@@ -392,6 +424,7 @@ function bucle() {
     }
   }
 
+  updateCTA(dt);
   // fauna
   for (const f of fauna) {
     const u = f.userData; const c = M.limpiezaEn(u.s);
@@ -419,7 +452,7 @@ bucle();
 
 // ganchos de prueba
 window.__demo = {
-  renderer, est, M, basura, tuberias, fauna, aveAtrapada, rig, camara, mirada,
+  renderer, est, M, basura, tuberias, fauna, aveAtrapada, rig, camara, mirada, ptr,
   irA(d) { est.dist = d; est.tramo = Math.min(NT - 1, Math.floor(d / TR)); },
   todoTramo() { for (const b of basura) if (b.userData.tramo === est.tramo && !b.userData.recogida) recoger(b); for (const x of tuberias) if (x.userData.tramo === est.tramo && !x.userData.sellada) { x.userData.sellada = true; est.selladas++; M.limpiar(x.userData.s, 0.3, 22); } hud(); },
   empezar() { $('inicio').classList.add('oculto'); $('hud').classList.remove('oculto'); audio.iniciar(); est.fase = 'viaje'; hud(); }

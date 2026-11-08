@@ -21,6 +21,7 @@
   <div id="hud-rio" class="papel"><div id="ruta"><b></b><b></b><b></b><b></b><b></b></div><div class="fila-salud"><small>Salud del río</small><div id="rio-barra"><span id="rio-fill"></span></div><b id="rio-pct">0%</b></div></div>
 </div>
 <div id="pista" class="papel oculto"></div>
+<div id="cta" class="cta oculto"></div>
 <div id="toast" class="papel"></div>
 <div id="mantener"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="42" class="fondo"/><circle id="mantener-arco" cx="50" cy="50" r="42"/></svg><span id="mantener-txt"></span></div>
 
@@ -63,6 +64,20 @@
     </div>
     <p id="cl-msg" class="msg"></p>
     <div class="paso"><span id="cl-paso"></span></div>
+  </div>
+</div>
+
+<!-- Foto de especie (pausa el juego) -->
+<div id="polaroid" class="pantalla oculto">
+  <div class="foto-card">
+    <img id="pol-img" alt="Foto de la especie">
+    <div class="pol-txt">
+      <small id="pol-tag" class="cap"></small>
+      <h2 id="pol-nom"></h2>
+      <i id="pol-cien"></i>
+      <p id="pol-dato"></p>
+    </div>
+    <div class="fila"><button id="pol-btn" class="btn">Seguir navegando</button></div>
   </div>
 </div>
 

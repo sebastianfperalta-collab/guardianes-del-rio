@@ -38,11 +38,11 @@ export const TRAMOS = [
 ];
 
 export const ESPECIES = [
-  { id: 'tingua', nombre: 'Tingua bogotana', cien: 'Rallus semiplumbeus', dato: 'Ave endémica de los humedales de la Sabana. Está en peligro: depende de humedales limpios con juncos.' },
-  { id: 'guapucha', nombre: 'Guapucha', cien: 'Grundulus bogotensis', dato: 'Pez plateado de menos de 8 cm, endémico del altiplano. Está amenazado y necesita agua de buena calidad.' },
-  { id: 'garza', nombre: 'Garza real', cien: 'Ardea alba', dato: 'Ave pescadora de humedales. Aparece cuando el agua vuelve a tener peces.' },
-  { id: 'pato', nombre: 'Pato andino', cien: 'Oxyura jamaicensis andina', dato: 'Pato buceador de los humedales altoandinos; figura entre las especies amenazadas de la Sabana.' },
-  { id: 'frailejon', nombre: 'Frailejón', cien: 'Espeletia', dato: 'Planta del páramo que atrapa la niebla y la convierte en agua: una esponja natural.' }
+  { id: 'tingua', foto: 'img/tingua.jpg', nombre: 'Tingua bogotana', cien: 'Rallus semiplumbeus', dato: 'Ave endémica de los humedales de la Sabana. Está en peligro: depende de humedales limpios con juncos.' },
+  { id: 'guapucha', foto: 'img/guapucha.jpg', nombre: 'Guapucha', cien: 'Grundulus bogotensis', dato: 'Pez plateado de menos de 8 cm, endémico del altiplano. Está amenazado y necesita agua de buena calidad.' },
+  { id: 'garza', foto: 'img/garza.webp', nombre: 'Garza real', cien: 'Ardea alba', dato: 'Ave pescadora de humedales. Aparece cuando el agua vuelve a tener peces.' },
+  { id: 'pato', foto: 'img/pato.webp', nombre: 'Pato andino', cien: 'Oxyura jamaicensis andina', dato: 'Pato buceador de los humedales altoandinos; figura entre las especies amenazadas de la Sabana.' },
+  { id: 'frailejon', foto: 'img/frailejon.jpg', nombre: 'Frailejón', cien: 'Espeletia', dato: 'Planta del páramo que atrapa la niebla y la convierte en agua: una esponja natural.' }
 ];
 
 export const BASURA = [
