@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#0b2226">
+<title>Guardianes del Río</title>
+<link rel="stylesheet" href="css/estilos.css">
+<script type="importmap">{"imports":{"three":"./lib/three.module.js"}}</script>
+</head>
+<body>
+<canvas id="lienzo"></canvas>
+<div id="flash"></div>
+
+<!-- HUD -->
+<div id="hud" class="oculto">
+  <div id="hud-tramo" class="papel"><b id="t-nombre">—</b><small id="t-lugar"></small></div>
+  <div id="hud-cont" class="papel"><i class="ico">🗑️</i><span id="c-basura">0</span><small>/<span id="c-meta">0</span></small></div>
+  <button id="btn-album" class="papel redondo" aria-label="Libreta">📖<i id="album-n">0</i></button>
+  <button id="btn-mudo" class="papel redondo" aria-label="Sonido">🔊</button>
+  <div id="hud-rio" class="papel"><div id="ruta"><b></b><b></b><b></b><b></b><b></b></div><div class="fila-salud"><small>Salud del río</small><div id="rio-barra"><span id="rio-fill"></span></div><b id="rio-pct">0%</b></div></div>
+</div>
+<div id="pista" class="papel oculto"></div>
+<div id="toast" class="papel"></div>
+<div id="mantener"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="42" class="fondo"/><circle id="mantener-arco" cx="50" cy="50" r="42"/></svg><span id="mantener-txt"></span></div>
+
+<!-- Inicio -->
+<div id="inicio" class="pantalla">
+  <div class="libreta">
+    <small class="cap">Río Bogotá · Misión de limpieza</small>
+    <div class="sello">🛶</div>
+    <h1>Guardianes del Río</h1>
+    <p class="sub">Un viaje en barca desde el páramo hasta el Salto del Tequendama</p>
+    <div id="hist" class="historia"></div>
+    <label id="nombre-wrap" class="oculto">Tu nombre de guardián<input id="nombre" maxlength="24" placeholder="Escribe tu nombre" autocomplete="off"></label>
+    <div class="fila"><button id="btn-sig" class="btn">Siguiente</button></div>
+    <small class="nota">Se juega mejor en vertical, con audífonos. Mueve el celular para mirar alrededor.</small>
+  </div>
+</div>
+
+<!-- Tarjeta genérica -->
+<div id="tarjeta" class="pantalla oculto">
+  <div class="libreta">
+    <small id="tj-sup" class="cap"></small>
+    <h2 id="tj-tit"></h2>
+    <p id="tj-txt"></p>
+    <small id="tj-fuente" class="nota"></small>
+    <div class="fila"><button id="tj-btn" class="btn">Seguir</button></div>
+  </div>
+</div>
+
+<!-- Clasificar -->
+<div id="clasif" class="pantalla oculto">
+  <div class="libreta">
+    <small class="cap">Antes de seguir</small>
+    <h2>Clasifica lo que recogiste</h2>
+    <div id="cl-item" class="item-clas"></div>
+    <p id="cl-nombre"></p>
+    <div class="canecas">
+      <button data-c="aprov" class="caneca c1">♻️<span>Aprovechable<br><small>plástico y metal</small></span></button>
+      <button data-c="org" class="caneca c2">🍂<span>Orgánico<br><small>restos y ramas</small></span></button>
+      <button data-c="esp" class="caneca c3">⚠️<span>Especial<br><small>llantas</small></span></button>
+    </div>
+    <p id="cl-msg" class="msg"></p>
+    <div class="paso"><span id="cl-paso"></span></div>
+  </div>
+</div>
+
+<!-- Álbum -->
+<div id="album" class="pantalla oculto">
+  <div class="libreta ancha">
+    <button id="album-x" class="cerrar">✕</button>
+    <small class="cap">Tu libreta de campo</small>
+    <h2>Especies que has visto</h2>
+    <div id="album-grid"></div>
+  </div>
+</div>
+
+<!-- Diploma -->
+<div id="final" class="pantalla oculto">
+  <div class="libreta ancha">
+    <small class="cap">Misión cumplida</small>
+    <h2>¡Eres Guardián del Río!</h2>
+    <img id="dip-img" alt="Diploma">
+    <div class="fila">
+      <a id="dip-desc" class="btn verde" download="diploma-guardian-del-rio.png">Descargar diploma</a>
+      <button id="dip-otra" class="btn sec">Volver a navegar</button>
+    </div>
+    <small class="nota" id="contacto"></small>
+  </div>
+</div>
+
+<script src="config.js"></script>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
