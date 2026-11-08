@@ -143,6 +143,7 @@ function cercano(lista, px, py, radio, maxDist, filtro) {
   }
   return mejor;
 }
+const VEL_BARCA = 3.4, RETRO_V = 2.4;
 const ptr = { id: null, x: 0, y: 0, x0: 0, y0: 0, t0: 0, mov: 0, hold: null, hp: 0 };
 lienzo.addEventListener('pointerdown', (e) => {
   if (est.fase !== 'viaje' && est.fase !== 'inicio') return;
@@ -178,9 +179,9 @@ function onda(x, z, c = 0xffffff) {
   const m = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ color: c, transparent: true, opacity: 0.9, fog: false })); m.position.set(x, 0.06, z); escena.add(m); ondas.push({ m, t: 0 });
 }
 function tocar(x, y) {
-  const b = cercano(basura, x, y, 70, 30, (o) => !o.userData.recogida);
+  const b = cercano(basura, x, y, 95, 34, (o) => !o.userData.recogida);
   if (b) return recoger(b);
-  const f = cercano(fauna, x, y, 80, 60, (o) => o.visible && o.userData.visible > 0.55);
+  const f = cercano(fauna, x, y, 110, 60, (o) => o.visible && o.userData.visible > 0.55);
   if (f) return foto(f);
 }
 function recoger(b) {
@@ -352,15 +353,15 @@ function bucle() {
     const fin = finTramo(est.tramo), pend = pendientes(est.tramo);
     const cumple = hechoTramo(est.tramo) >= metaTramo(est.tramo);
     est.freno = lerp(est.freno ?? 1, ptr.hold ? 0.1 : 1, Math.min(1, dt * 3));
-    let objetivo = (est.retro ? -4 : 5.2) * est.freno;
-    if (est.dist > fin - 8 && !est.retro) objetivo = Math.max(0, 5.2 * (fin - est.dist) / 8);
+    let objetivo = (est.retro ? -RETRO_V : VEL_BARCA) * est.freno;
+    if (est.dist > fin - 8 && !est.retro) objetivo = Math.max(0, VEL_BARCA * (fin - est.dist) / 8);
     if (est.dist >= fin - 0.4 && !cumple) {
       if (!est.retro) {
         const menor = Math.min(...pend.map((p) => p.userData.s)) * LARGO; est.retroHasta = menor - 16;
         if (pend.length && est.retroHasta < est.dist - 6) { est.retro = true; toast('Volvamos por lo que quedó atrás 🛶'); }
       }
     }
-    if (est.retro && est.dist <= est.retroHasta) { est.retro = false; }
+    if (est.retro && (pend.length === 0 || est.dist <= est.retroHasta)) { est.retro = false; est.vel = Math.max(0, est.vel); }
     est.vel += (objetivo - est.vel) * Math.min(1, dt * 1.6);
     est.dist = clamp(est.dist + est.vel * dt, 0, LARGO * 0.982);
     if (est.dist >= fin - 0.5 && cumple && Math.abs(est.vel) < 0.5 && est.fase === 'viaje') terminarTramo(est.tramo);
