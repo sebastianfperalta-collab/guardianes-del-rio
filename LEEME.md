@@ -35,11 +35,29 @@ Los textos y datos están en `js/datos.js`.
 - El "pato andino" del álbum se asocia a *Oxyura jamaicensis*, que figura como amenazada a nivel nacional en la ficha de los humedales de la Sabana; confirma el nombre común con un biólogo si lo vas a citar.
 - La historia del abuelo es ficticia (narrativa).
 
-## Estilo visual (v2)
-- Orillas tipo acantilado con capas de roca, agua azul turquesa con espuma, casas de techo rojo, palafitos, puentes de madera, cascadas, nubes, helechos arborescentes en el último tramo y edificios en el tramo de Bogotá y Soacha.
-- Fondo 360° pintado por código (cielo, nubes y tres capas de cordillera), en el mismo estilo low-poly. Se oscurece y se llena de bruma cuando el río está sucio.
-- Interfaz de vidrio oscuro turquesa con botones naranja/verde y mapa de ruta de 5 tramos.
-- La versión anterior quedó en la carpeta demo-rio-v1 (no incluida en el zip).
+## Modelos 3D y entorno (v3)
+- Canoa de tablas con costillas, bancos, borda, roda de proa con franjas, cuerda, balde, canasto tejido y remo.
+- Fauna rehecha: garza con cuello curvo, tingua de pico rojo, pato de mejilla blanca y cola en abanico, guapuchas que saltan.
+- 15 residuos con forma propia (botella con etiqueta, lata, llanta, caja con solapas, periódico, bombillo, celular…).
+- Vertimiento con cabezal de concreto, chorro animado y mancha en el agua; al sellarlo aparece una tapa verde con volante.
+- Agua con ondas que siguen la corriente, reflejo del cielo, destello del sol, red de luz y espuma de orilla; nata cuando está sucia.
+- Acantilados con estratos, vetas y musgo; pasto con parches y cultivos de la sabana.
+- Vegetación nueva con vaivén de viento: pinos, árboles, sauces llorones, arbustos, pasto, juncos con espadañas, lirios, lotos y frailejones con flores.
+- Pueblos con casas detalladas (ventanas, puertas, corredor, balcón), potreros con cercas y vacas, iglesia, palafitos, canoas pintadas, puentes con barandas y faroles.
+- Ciudad con edificios de ventanas y toldos, y fábricas con chimeneas cuyo humo se apaga cuando el río sana.
+- Letreros de madera con el nombre de cada tramo, nubes suaves, cascadas con rocas y bruma.
+- Muelle con cuerdas, farol y el abuelo con ruana y sombrero.
+- Si el equipo va lento (menos de 26 cuadros por segundo), el juego baja la resolución y oculta pasto y arbustos automáticamente.
+- Fondo 360° pintado por código; interfaz de vidrio oscuro turquesa.
+- Versiones anteriores: carpetas demo-rio-v1 y demo-rio-v2 (no incluidas en el zip).
+
+## Segunda ronda de mejoras 3D (v4)
+- Formas redondeadas y suaves: pinos de pisos redondeados, copas de masas redondas, arbustos y guijarros lisos.
+- Acantilados y orillas como muros de bloques de piedra clara, con enredaderas que cuelgan y pasto que se asoma en el borde.
+- Agua turquesa translúcida con piedras del fondo visibles cerca de la orilla y red de luz más marcada.
+- Orillas más densas: flores en espiga de colores, plantas de hoja ancha, helechos bajos, guijarros, más lirios y lotos blancos y rosados; florecitas pintadas sobre el pasto.
+- Rocas en bloques facetados claros con musgo arriba.
+- La versión anterior quedó en la carpeta demo-rio-v3 (no incluida en el zip).
 
 ## Créditos técnicos
 three.js 0.160 (MIT). Fuentes Fredoka y Nunito (OFL). Sonidos sintetizados en el navegador.

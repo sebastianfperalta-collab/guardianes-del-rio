@@ -40,8 +40,8 @@ const cielo = M.crearCielo(); escena.add(cielo);
 const agua = M.crearAgua(); escena.add(agua);
 const orillas = M.crearOrillas(); orillas.forEach((o) => escena.add(o));
 const flora = M.crearFlora(escena, innerWidth < 500 ? 0.8 : 1);
-const decor = crearDecor(escena);
-const barca = O.crearBarca(); rig.add(barca); barca.position.y = 0.0;
+const decor = crearDecor(escena, [['Páramo de Guacheneque', 'Aquí nace el río Bogotá'], ['Villapinzón · Chocontá', 'Cuenca alta'], ['Sabana de Bogotá', 'Humedales'], ['Bogotá · Soacha', 'Cuenca media'], ['Salto del Tequendama', '157 m de caída']]);
+const barca = O.crearBarca(); rig.add(barca); barca.position.set(0, -0.04, 0.3);
 const bandada = O.crearBandada(escena, 14);
 const luciernagas = O.crearLuciernagas(escena, 70);
 const muelle = O.crearMuelle(escena, 0.004);
@@ -87,13 +87,8 @@ for (const s of [0.44, 0.52, 0.64, 0.8, 0.9]) for (let k = 0; k < 3; k++) addFau
 for (const [s, l] of [[0.46, 1], [0.72, -1], [0.9, 1]]) addFauna('garza', O.crearGarza(), s, l, -0.82, 0.6, 1.4, 'orilla');
 for (const [s, l] of [[0.4, -1], [0.55, 1], [0.78, -1]]) addFauna('pato', O.crearPato(), s, l, -0.55, 0.5, 1.5, 'agua');
 const tingua = addFauna('tingua', O.crearTingua(), 0.5, -1, -0.92, 9, 1.6, 'agua'); 
-for (const s of [0.035, 0.07, 0.115, 0.17]) {
-  const fr = new THREE.Group();
-  const tr = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.26, 1.4, 6), new THREE.MeshLambertMaterial({ color: 0x7c6a3a, flatShading: true })); tr.position.y = 0.7; fr.add(tr);
-  const h1 = new THREE.Mesh(new THREE.ConeGeometry(0.75, 1.1, 8), new THREE.MeshLambertMaterial({ color: 0xaec394, flatShading: true })); h1.position.y = 1.8; fr.add(h1);
-  const h2 = new THREE.Mesh(new THREE.ConeGeometry(0.5, 1.1, 8), new THREE.MeshLambertMaterial({ color: 0xc4d3ae, flatShading: true })); h2.position.y = 2.3; fr.add(h2);
-  addFauna('frailejon', fr, s, s * 100 % 2 < 1 ? 1 : -1, 2.6, -1, 1.7);
-}
+const geoFrail = M.GEOS.frailejon(), matFrail = new THREE.MeshLambertMaterial({ vertexColors: true });
+for (const s of [0.035, 0.07, 0.115, 0.17]) addFauna('frailejon', new THREE.Mesh(geoFrail, matFrail), s, s * 100 % 2 < 1 ? 1 : -1, 2.6, -1, 1.5);
 
 // ave atrapada (tramo 2)
 const aveAtrapada = (() => {
@@ -432,7 +427,7 @@ function bucle() {
     const debe = u.id === 'frailejon' || (u.id === 'tingua' ? aveAtrapada.userData.libre : c > u.thr);
     f.visible = true; u.visible += ((debe ? 1 : 0) - u.visible) * Math.min(1, dt * 1.5);
     f.scale.setScalar(Math.max(0.0001, u.visible * u.esc));
-    if (u.tipo === 'pez') { const a = t * 0.8 + u.f; f.position.set(u.cx + Math.cos(a) * 1.4, -0.12 + Math.sin(t * 2 + u.f) * 0.05, u.cz + Math.sin(a) * 1.4); f.rotation.y = -a; }
+    if (u.tipo === 'pez') { const a = t * 0.8 + u.f, sal = Math.pow(Math.max(0, Math.sin(t * 1.1 + u.f * 3)), 8); f.position.set(u.cx + Math.cos(a) * 1.4, -0.06 + Math.sin(t * 2 + u.f) * 0.03 + sal * 0.55, u.cz + Math.sin(a) * 1.4); f.rotation.y = -a; f.rotation.x = Math.cos(t * 1.1 + u.f * 3) * sal * 1.2; }
     else if (u.tipo === 'agua') { f.position.y = Math.sin(t * 1.5 + u.f) * 0.04; f.position.x = u.cx + Math.sin(t * 0.3 + u.f) * 0.5; }
     else if (u.id === 'garza') f.rotation.y += Math.sin(t * 0.4 + u.f) * 0.004;
     f.visible = u.visible > 0.02;
@@ -444,8 +439,11 @@ function bucle() {
   for (let i = ondas.length - 1; i >= 0; i--) { const w = ondas[i]; w.t += dt; w.m.scale.setScalar(1 + w.t * 5); w.m.material.opacity = Math.max(0, 0.9 - w.t * 1.6); if (w.t > 0.6) { escena.remove(w.m); ondas.splice(i, 1); } }
   if ((est.fase === 'viaje' || est.fase === 'inicio') && Math.floor(t * 4) % 3 === 0) hudRapido();
 
+  // calidad adaptativa: si el equipo va lento, baja resolución y vegetación menuda
+  if (cal.n >= 0 && est.fase === 'viaje') { cal.n++; cal.s += dt; if (cal.n === 120) { const fps = cal.n / cal.s; if (fps < 26 && cal.nivel < 2) { cal.nivel++; if (cal.nivel === 1) renderer.setPixelRatio(1); else { for (const k of [3, 4, 12, 13]) flora[k].mesh.visible = false; } cal.n = 0; cal.s = 0; } else cal.n = -1; } }
   renderer.render(escena, camara);
 }
+const cal = { n: 0, s: 0, nivel: 0 };
 let hudT = 0; function hudRapido() { if (t_ahora() - hudT > 0.5) { hudT = t_ahora(); if (est.fase === 'viaje') hud(); } }
 function t_ahora() { return performance.now() / 1000; }
 function canastoPos(v) { barca.userData.canasto.getWorldPosition(v); v.y += 0.4; }
