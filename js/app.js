@@ -6,7 +6,7 @@ import * as M from './mundo.js';
 import * as O from './objetos.js';
 import { crearDecor } from './decor.js';
 
-const CFG = Object.assign({ basuraPorTramo: null, rapido: false, organizacion: '', contacto: '' }, window.CONFIG || {});
+const CFG = Object.assign({ basuraPorTramo: null, rapido: false, organizacion: '', contacto: '', logo: '' }, window.CONFIG || {});
 const Q = new URLSearchParams(location.search);
 if (Q.get('rapido')) CFG.rapido = true;
 const $ = (id) => document.getElementById(id);
@@ -277,6 +277,7 @@ async function finalizar() {
   try {
     await Promise.all(['500 30px Cormorant', '600 30px Cormorant', '700 30px Cormorant', 'italic 500 30px Cormorant', 'italic 600 30px Cormorant', '400 60px Pinyon'].map((f) => document.fonts.load(f)));
   } catch (e) { /* sigue con la tipografía de respaldo */ }
+  const logo = CFG.logo ? await new Promise((ok) => { const im = new Image(); im.onload = () => ok(im); im.onerror = () => ok(null); im.src = CFG.logo; }) : null;
   const W = 1400, H = 990, c = document.createElement('canvas'); c.width = W; c.height = H; const x = c.getContext('2d');
   const VERDE = '#12403f', ORO = '#a8822f', ORO2 = '#d9b95c', TINTA = '#2b2a26', SERIF = 'Cormorant, "Times New Roman", Georgia, serif', CAL = 'Pinyon, "Snell Roundhand", cursive';
   const ctr = (t, y, font, color, sp = 0, cx = W / 2) => { x.font = font; x.fillStyle = color; x.letterSpacing = sp + 'px'; x.fillText(t, cx + sp / 2, y); x.letterSpacing = '0px'; };
@@ -310,11 +311,14 @@ async function finalizar() {
     x.fillStyle = ORO; x.save(); x.translate(64, 64); x.rotate(Math.PI / 4); x.fillRect(-4, -4, 8, 8); x.restore(); x.restore();
   }
   // encabezado
-  ctr((CFG.organizacion || 'PROGRAMA EDUCATIVO').toUpperCase(), 178, `600 26px ${SERIF}`, VERDE, 7);
-  x.strokeStyle = ORO; x.lineWidth = 1.5; x.beginPath(); x.moveTo(560, 200); x.lineTo(840, 200); x.stroke();
-  x.fillStyle = ORO; x.save(); x.translate(700, 200); x.rotate(Math.PI / 4); x.fillRect(-5, -5, 10, 10); x.restore();
-  ctr('DIPLOMA DE RECONOCIMIENTO', 262, `700 54px ${SERIF}`, VERDE, 6);
-  ctr('Guardián del Río', 322, `italic 600 46px ${SERIF}`, ORO, 1);
+  if (logo) { const h = 108, w = h * logo.width / logo.height; x.drawImage(logo, W / 2 - w / 2, 120, w, h); }
+  else {
+    ctr((CFG.organizacion || 'PROGRAMA EDUCATIVO').toUpperCase(), 178, `600 26px ${SERIF}`, VERDE, 7);
+    x.strokeStyle = ORO; x.lineWidth = 1.5; x.beginPath(); x.moveTo(560, 200); x.lineTo(840, 200); x.stroke();
+    x.fillStyle = ORO; x.save(); x.translate(700, 200); x.rotate(Math.PI / 4); x.fillRect(-5, -5, 10, 10); x.restore();
+  }
+  ctr('DIPLOMA DE RECONOCIMIENTO', 278, `700 54px ${SERIF}`, VERDE, 6);
+  ctr('Guardián del Río', 334, `italic 600 46px ${SERIF}`, ORO, 1);
   ctr('Se otorga el presente diploma a', 388, `italic 500 30px ${SERIF}`, TINTA);
   // nombre en caligrafía, ajustado al ancho
   const nombre = est.nombre || 'Guardián'; let tam = 104; x.font = `400 ${tam}px ${CAL}`;
