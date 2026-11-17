@@ -274,37 +274,78 @@ function terminarTramo(t) {
 // ---------- diploma ----------
 async function finalizar() {
   est.fase = 'fin'; audio.fanfarria();
-  try { await document.fonts.load('700 60px Fredoka'); await document.fonts.load('500 26px Fredoka'); } catch (e) { /* sigue */ }
-  const c = document.createElement('canvas'); c.width = 1400; c.height = 990; const x = c.getContext('2d');
-  const rr = (X, Y, W, H, R) => { x.beginPath(); x.moveTo(X + R, Y); x.arcTo(X + W, Y, X + W, Y + H, R); x.arcTo(X + W, Y + H, X, Y + H, R); x.arcTo(X, Y + H, X, Y, R); x.arcTo(X, Y, X + W, Y, R); x.closePath(); };
-  const fondo = x.createLinearGradient(0, 0, 1400, 990); fondo.addColorStop(0, '#0f3a3d'); fondo.addColorStop(1, '#071b1f'); x.fillStyle = fondo; x.fillRect(0, 0, 1400, 990);
-  // destellos
-  for (let i = 0; i < 70; i++) { const px = (Math.sin(i * 91.7) * 0.5 + 0.5) * 1400, py = (Math.sin(i * 53.3) * 0.5 + 0.5) * 990, r = 1 + (i % 4); const g = x.createRadialGradient(px, py, 0, px, py, r * 4); g.addColorStop(0, 'rgba(120,255,225,.9)'); g.addColorStop(1, 'rgba(120,255,225,0)'); x.fillStyle = g; x.fillRect(px - r * 4, py - r * 4, r * 8, r * 8); }
-  // olas
-  for (let k = 0; k < 3; k++) { x.beginPath(); x.moveTo(0, 800 + k * 28); for (let i = 0; i <= 1400; i += 10) x.lineTo(i, 800 + k * 28 + Math.sin(i / 70 + k * 1.3) * 14); x.lineTo(1400, 990); x.lineTo(0, 990); x.closePath(); x.fillStyle = ['rgba(69,232,203,.25)', 'rgba(40,150,170,.45)', 'rgba(20,90,120,.8)'][k]; x.fill(); }
-  // marco de vidrio
-  x.shadowColor = 'rgba(69,232,203,.8)'; x.shadowBlur = 30; x.strokeStyle = 'rgba(118,246,222,.9)'; x.lineWidth = 4; rr(50, 50, 1300, 890, 40); x.stroke();
-  x.shadowBlur = 0; x.strokeStyle = 'rgba(118,246,222,.3)'; x.lineWidth = 2; rr(68, 68, 1264, 854, 30); x.stroke();
-  // cápsula
-  x.fillStyle = 'rgba(118,246,222,.14)'; rr(500, 112, 400, 56, 18); x.fill(); x.strokeStyle = 'rgba(118,246,222,.6)'; x.stroke();
-  x.textAlign = 'center'; x.fillStyle = '#c4fbef'; x.font = '600 26px Fredoka'; x.fillText('LOGRO DESBLOQUEADO', 700, 150);
-  x.shadowColor = 'rgba(69,232,203,.7)'; x.shadowBlur = 24; x.fillStyle = '#ffffff'; x.font = '700 100px Fredoka'; x.fillText('Guardián del Río', 700, 280); x.shadowBlur = 0;
-  x.fillStyle = '#a6d6cd'; x.font = '500 30px Fredoka'; x.fillText('Se otorga a', 700, 345);
-  x.shadowColor = 'rgba(255,180,70,.7)'; x.shadowBlur = 20; x.fillStyle = '#ffc45e'; x.font = '700 80px Fredoka'; x.fillText(est.nombre || 'Guardián', 700, 440); x.shadowBlur = 0;
-  x.fillStyle = '#e6fffa'; x.font = '500 30px Fredoka';
-  ['por recorrer el río Bogotá desde el páramo de Guacheneque', 'hasta el Salto del Tequendama.'].forEach((l, i) => x.fillText(l, 700, 510 + i * 42));
-  // fichas de logros
-  const logros = [['🗑️', est.total, 'residuos'], ['🔧', est.selladas, 'vertimientos'], ['📷', `${est.especies.size}/${ESPECIES.length}`, 'especies'], ['♻️', `${est.bien}/${est.clasificadas}`, 'bien clasificados']];
-  logros.forEach(([ic, n, t], i) => {
-    const X = 190 + i * 265, Y = 600;
-    x.fillStyle = 'rgba(0,0,0,.28)'; rr(X, Y, 230, 140, 22); x.fill(); x.strokeStyle = 'rgba(118,246,222,.5)'; x.lineWidth = 2; x.stroke();
-    x.font = '40px sans-serif'; x.fillText(ic, X + 50, Y + 62);
-    x.fillStyle = '#ffffff'; x.font = '700 44px Fredoka'; x.textAlign = 'left'; x.fillText(String(n), X + 92, Y + 66);
-    x.fillStyle = '#a6d6cd'; x.font = '500 22px Fredoka'; x.textAlign = 'center'; x.fillText(t, X + 115, Y + 112); x.fillStyle = '#e6fffa';
+  try {
+    await Promise.all(['500 30px Cormorant', '600 30px Cormorant', '700 30px Cormorant', 'italic 500 30px Cormorant', 'italic 600 30px Cormorant', '400 60px Pinyon'].map((f) => document.fonts.load(f)));
+  } catch (e) { /* sigue con la tipografía de respaldo */ }
+  const W = 1400, H = 990, c = document.createElement('canvas'); c.width = W; c.height = H; const x = c.getContext('2d');
+  const VERDE = '#12403f', ORO = '#a8822f', ORO2 = '#d9b95c', TINTA = '#2b2a26', SERIF = 'Cormorant, "Times New Roman", Georgia, serif', CAL = 'Pinyon, "Snell Roundhand", cursive';
+  const ctr = (t, y, font, color, sp = 0, cx = W / 2) => { x.font = font; x.fillStyle = color; x.letterSpacing = sp + 'px'; x.fillText(t, cx + sp / 2, y); x.letterSpacing = '0px'; };
+  x.textAlign = 'center'; x.textBaseline = 'alphabetic';
+  // papel marfil con viñeta y fibra
+  x.fillStyle = '#f7f1e1'; x.fillRect(0, 0, W, H);
+  let g = x.createRadialGradient(W / 2, H / 2, 200, W / 2, H / 2, 820); g.addColorStop(0, 'rgba(255,252,240,.9)'); g.addColorStop(1, 'rgba(206,184,132,.38)'); x.fillStyle = g; x.fillRect(0, 0, W, H);
+  for (let i = 0; i < 2600; i++) { const px = (Math.sin(i * 12.9898) * 43758.5453 % 1 + 1) % 1 * W, py = (Math.sin(i * 78.233) * 12543.123 % 1 + 1) % 1 * H; x.fillStyle = `rgba(120,95,50,${0.025 + (i % 5) * 0.006})`; x.fillRect(px, py, 1 + (i % 3 === 0), 1); }
+  // marca de agua: gota con ondas
+  x.save(); x.translate(W / 2, 520); x.globalAlpha = 0.07; x.strokeStyle = VERDE; x.lineWidth = 3;
+  for (let k = 0; k < 6; k++) { x.beginPath(); for (let t = -300; t <= 300; t += 6) x.lineTo(t, -60 + k * 34 + Math.sin(t / 46 + k) * 12); x.stroke(); }
+  x.beginPath(); x.moveTo(0, -250); x.bezierCurveTo(130, -90, 150, 20, 0, 70); x.bezierCurveTo(-150, 20, -130, -90, 0, -250); x.stroke(); x.restore();
+  // marco: verde grueso, filete dorado y banda interior con motivo de ondas
+  x.strokeStyle = VERDE; x.lineWidth = 16; x.strokeRect(38, 38, W - 76, H - 76);
+  x.strokeStyle = ORO; x.lineWidth = 3; x.strokeRect(58, 58, W - 116, H - 116);
+  x.lineWidth = 1.5; x.strokeRect(68, 68, W - 136, H - 136);
+  // banda de guilloché (curvas entrelazadas) entre los filetes interiores
+  const banda = (x0, y0, x1, y1, vertical) => {
+    x.save(); x.beginPath(); x.rect(x0, y0, x1 - x0, y1 - y0); x.clip(); x.strokeStyle = 'rgba(168,130,47,.55)'; x.lineWidth = 1;
+    for (let ph = 0; ph < 3; ph++) { x.beginPath(); const L = vertical ? y1 - y0 : x1 - x0, m = vertical ? (x0 + x1) / 2 : (y0 + y1) / 2;
+      for (let t = 0; t <= L; t += 3) { const o = Math.sin(t / 14 + ph * 2.1) * 8; vertical ? x.lineTo(m + o, y0 + t) : x.lineTo(x0 + t, m + o); } x.stroke(); }
+    x.restore();
+  };
+  banda(86, 86, W - 86, 116, false); banda(86, H - 116, W - 86, H - 86, false); banda(86, 116, 116, H - 116, true); banda(W - 116, 116, W - 86, H - 116, true);
+  x.strokeStyle = ORO; x.lineWidth = 1.5; x.strokeRect(86, 86, W - 172, H - 172); x.strokeRect(116, 116, W - 232, H - 232);
+  // esquineros: arcos concéntricos y rombos
+  for (const [cx, cy, sx, sy] of [[116, 116, 1, 1], [W - 116, 116, -1, 1], [116, H - 116, 1, -1], [W - 116, H - 116, -1, -1]]) {
+    x.save(); x.translate(cx, cy); x.scale(sx, sy); x.strokeStyle = ORO; x.fillStyle = VERDE;
+    for (let r = 18; r <= 54; r += 12) { x.lineWidth = r === 30 ? 2.4 : 1.2; x.beginPath(); x.arc(0, 0, r, 0, Math.PI / 2); x.stroke(); }
+    x.beginPath(); x.moveTo(0, 0); x.lineTo(14, 0); x.lineTo(0, 14); x.closePath(); x.fill();
+    x.fillStyle = ORO; x.save(); x.translate(64, 64); x.rotate(Math.PI / 4); x.fillRect(-4, -4, 8, 8); x.restore(); x.restore();
+  }
+  // encabezado
+  ctr((CFG.organizacion || 'PROGRAMA EDUCATIVO').toUpperCase(), 178, `600 26px ${SERIF}`, VERDE, 7);
+  x.strokeStyle = ORO; x.lineWidth = 1.5; x.beginPath(); x.moveTo(560, 200); x.lineTo(840, 200); x.stroke();
+  x.fillStyle = ORO; x.save(); x.translate(700, 200); x.rotate(Math.PI / 4); x.fillRect(-5, -5, 10, 10); x.restore();
+  ctr('DIPLOMA DE RECONOCIMIENTO', 262, `700 54px ${SERIF}`, VERDE, 6);
+  ctr('Guardián del Río', 322, `italic 600 46px ${SERIF}`, ORO, 1);
+  ctr('Se otorga el presente diploma a', 388, `italic 500 30px ${SERIF}`, TINTA);
+  // nombre en caligrafía, ajustado al ancho
+  const nombre = est.nombre || 'Guardián'; let tam = 104; x.font = `400 ${tam}px ${CAL}`;
+  while (x.measureText(nombre).width > 900 && tam > 50) { tam -= 4; x.font = `400 ${tam}px ${CAL}`; }
+  x.fillStyle = '#7a5a14'; x.fillText(nombre, W / 2, 492);
+  x.strokeStyle = ORO; x.lineWidth = 1.5; x.beginPath(); x.moveTo(380, 520); x.lineTo(1020, 520); x.stroke();
+  // texto
+  ['por haber recorrido el río Bogotá desde el páramo de Guacheneque hasta el Salto del Tequendama,', 'y contribuido a su recuperación con las siguientes acciones:'].forEach((l, i) => ctr(l, 572 + i * 38, `500 28px ${SERIF}`, TINTA));
+  // logros: cifras en serif separadas por filetes
+  const logros = [[est.total, 'RESIDUOS', 'RECOGIDOS'], [est.selladas, 'VERTIMIENTOS', 'SELLADOS'], [`${est.especies.size} de ${ESPECIES.length}`, 'ESPECIES', 'REGISTRADAS'], [`${est.bien} de ${est.clasificadas}`, 'RESIDUOS BIEN', 'CLASIFICADOS']];
+  logros.forEach(([n, t1, t2], i) => {
+    const cx = 270 + i * 287;
+    ctr(String(n), 676, `700 58px ${SERIF}`, VERDE, 0, cx); ctr(t1, 712, `600 17px ${SERIF}`, ORO, 2.5, cx); ctr(t2, 734, `600 17px ${SERIF}`, ORO, 2.5, cx);
+    if (i) { x.strokeStyle = 'rgba(168,130,47,.6)'; x.lineWidth = 1; x.beginPath(); x.moveTo(cx - 143, 640); x.lineTo(cx - 143, 740); x.stroke(); }
   });
-  x.fillStyle = '#c4fbef'; x.font = '500 24px Fredoka';
+  // pie: fecha, sello y firma
   const fecha = new Date().toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' });
-  x.fillText('Del páramo al Magdalena: un solo río, muchas manos.  ·  ' + fecha + (CFG.organizacion ? '  ·  ' + CFG.organizacion : ''), 700, 895);
+  x.textAlign = 'center'; x.fillStyle = TINTA; x.font = `italic 500 26px ${SERIF}`; x.fillText(fecha, 350, 822);
+  x.strokeStyle = TINTA; x.lineWidth = 1; x.beginPath(); x.moveTo(230, 836); x.lineTo(470, 836); x.stroke();
+  x.fillStyle = ORO; x.font = `600 16px ${SERIF}`; x.letterSpacing = '3px'; x.fillText('FECHA DE EXPEDICIÓN', 350, 860); x.letterSpacing = '0px';
+  x.fillStyle = TINTA; x.font = `italic 500 26px ${SERIF}`; x.fillText('Un solo río, muchas manos', 1050, 822);
+  x.beginPath(); x.moveTo(930, 836); x.lineTo(1170, 836); x.stroke();
+  x.fillStyle = ORO; x.font = `600 16px ${SERIF}`; x.letterSpacing = '3px'; x.fillText('GUARDIANES DEL RÍO', 1050, 860); x.letterSpacing = '0px';
+  // sello dorado festoneado con cintas
+  const sx = 700, sy = 798;
+  x.fillStyle = '#8c1f2b'; for (const s of [-1, 1]) { x.beginPath(); x.moveTo(sx + s * 14, sy + 30); x.lineTo(sx + s * 52, sy + 88); x.lineTo(sx + s * 34, sy + 82); x.lineTo(sx + s * 20, sy + 92); x.lineTo(sx + s * -2, sy + 40); x.closePath(); x.fill(); }
+  g = x.createRadialGradient(sx - 14, sy - 16, 6, sx, sy, 72); g.addColorStop(0, '#f6e3a1'); g.addColorStop(0.6, '#d3a93f'); g.addColorStop(1, '#a37a22');
+  x.beginPath(); for (let i = 0; i < 48; i++) { const a = i / 48 * Math.PI * 2, r = i % 2 ? 66 : 72; x.lineTo(sx + Math.cos(a) * r, sy + Math.sin(a) * r); } x.closePath(); x.fillStyle = g; x.fill();
+  x.strokeStyle = 'rgba(110,80,15,.7)'; x.lineWidth = 2; x.beginPath(); x.arc(sx, sy, 56, 0, 7); x.stroke(); x.lineWidth = 1; x.beginPath(); x.arc(sx, sy, 49, 0, 7); x.stroke();
+  x.fillStyle = 'rgba(110,80,15,.85)'; x.beginPath(); x.moveTo(sx, sy - 30); x.bezierCurveTo(sx + 26, sy - 4, sx + 28, sy + 18, sx, sy + 26); x.bezierCurveTo(sx - 28, sy + 18, sx - 26, sy - 4, sx, sy - 30); x.fill();
+  x.strokeStyle = 'rgba(247,231,170,.9)'; x.lineWidth = 2.5; x.beginPath(); for (let t = -16; t <= 16; t += 2) x.lineTo(sx + t, sy + 6 + Math.sin(t / 4) * 3); x.stroke();
   $('dip-img').src = c.toDataURL('image/png'); $('dip-desc').href = c.toDataURL('image/png');
   $('contacto').textContent = CFG.contacto; $('final').classList.remove('oculto');
 }
@@ -451,7 +492,7 @@ bucle();
 
 // ganchos de prueba
 window.__demo = {
-  renderer, est, M, basura, tuberias, fauna, aveAtrapada, rig, camara, mirada, ptr,
+  renderer, est, M, basura, tuberias, fauna, aveAtrapada, rig, camara, mirada, ptr, finalizar,
   irA(d) { est.dist = d; est.tramo = Math.min(NT - 1, Math.floor(d / TR)); },
   todoTramo() { for (const b of basura) if (b.userData.tramo === est.tramo && !b.userData.recogida) recoger(b); for (const x of tuberias) if (x.userData.tramo === est.tramo && !x.userData.sellada) { x.userData.sellada = true; est.selladas++; M.limpiar(x.userData.s, 0.3, 22); } hud(); },
   empezar() { $('inicio').classList.add('oculto'); $('hud').classList.remove('oculto'); audio.iniciar(); est.fase = 'viaje'; hud(); }
