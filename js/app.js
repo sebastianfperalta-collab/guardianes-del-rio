@@ -311,15 +311,15 @@ async function finalizar() {
     x.fillStyle = ORO; x.save(); x.translate(64, 64); x.rotate(Math.PI / 4); x.fillRect(-4, -4, 8, 8); x.restore(); x.restore();
   }
   // encabezado
-  if (logo) { const h = 108, w = h * logo.width / logo.height; x.drawImage(logo, W / 2 - w / 2, 120, w, h); }
+  if (logo) { const h = 122, w = h * logo.width / logo.height; x.save(); x.globalCompositeOperation = 'multiply'; x.drawImage(logo, W / 2 - w / 2, 114, w, h); x.restore(); }
   else {
     ctr((CFG.organizacion || 'PROGRAMA EDUCATIVO').toUpperCase(), 178, `600 26px ${SERIF}`, VERDE, 7);
     x.strokeStyle = ORO; x.lineWidth = 1.5; x.beginPath(); x.moveTo(560, 200); x.lineTo(840, 200); x.stroke();
     x.fillStyle = ORO; x.save(); x.translate(700, 200); x.rotate(Math.PI / 4); x.fillRect(-5, -5, 10, 10); x.restore();
   }
-  ctr('DIPLOMA DE RECONOCIMIENTO', 278, `700 54px ${SERIF}`, VERDE, 6);
-  ctr('Guardián del Río', 334, `italic 600 46px ${SERIF}`, ORO, 1);
-  ctr('Se otorga el presente diploma a', 388, `italic 500 30px ${SERIF}`, TINTA);
+  ctr('DIPLOMA DE RECONOCIMIENTO', 292, `700 54px ${SERIF}`, VERDE, 6);
+  ctr('Guardián del Río', 342, `italic 600 46px ${SERIF}`, ORO, 1);
+  ctr('Se otorga el presente diploma a', 394, `italic 500 30px ${SERIF}`, TINTA);
   // nombre en caligrafía, ajustado al ancho
   const nombre = est.nombre || 'Guardián'; let tam = 104; x.font = `400 ${tam}px ${CAL}`;
   while (x.measureText(nombre).width > 900 && tam > 50) { tam -= 4; x.font = `400 ${tam}px ${CAL}`; }
